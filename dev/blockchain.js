@@ -3,6 +3,8 @@ const sha256 = require('sha256');
 function Blockchain() {
   this.chain = [];
   this.pendingTransaction = [];
+
+  this.createNewBlock(911, '00', '00'); // you can just put random value here to create you very first block (called genesis block);
 }
 
 // =============== ================== =============== method lists =============== ================== ===============
@@ -66,5 +68,7 @@ Blockchain.prototype.proofOfWork = function(previousBlockHash, currentBlockData)
   }
   return nonce;
 };
+// it takes a lot of work to generate proof of work, but it very easy to verify that the proof of work is correct
+// so when you want to validate older chain, you only need to use correct nonce along with the previous hash & block data
 
 module.exports = Blockchain;
