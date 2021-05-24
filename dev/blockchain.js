@@ -48,6 +48,23 @@ Blockchain.prototype.hashBlock =  function(previousBlockHash, currentBlockData, 
   return hash;
 };
 
+// create proof of work method
+  // repeat hash block function until it finds correct hash (begin with 4 zero) ==> '0000XXXXXXXXX'
+  // uses current block data also previousBlockHash
+  // continuously changes nonce value until it finds the correct hash, you can start with 0
+  // returns to use the nonce value that creates the correct hash
 
+  // How this proof of work method can secure the blockchain ? since it using previousBlockHash, and calculate nonce until find 4 begin zero really need a lot of energy & a lot of computing power
+  // so it won't be possible for someone to go back and change the data, especially when all the data is distributed anywhere on earth
+Blockchain.prototype.proofOfWork = function(previousBlockHash, currentBlockData) {
+  let nonce = 0;
+  let hash = this.hashBlock(previousBlockHash, currentBlockData, nonce);
+  while (hash.substring(0,4) != '0000') {
+    nonce++;
+    hash = this.hashBlock(previousBlockHash, currentBlockData, nonce);
+    console.log(hash);
+  }
+  return nonce;
+};
 
 module.exports = Blockchain;
