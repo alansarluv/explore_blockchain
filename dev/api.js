@@ -1,12 +1,15 @@
-const express = require('express')
-const app = express()
- 
+const express = require('express');
+const app = express();
+const Blockchain = require('./blockchain');
+
+const bitcoin = new Blockchain();
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: false}));
 
 // API for create new block
 app.get('/blockchain', function (req, res) {
-
+  res.send(bitcoin);
 });
 
 // API for create new transaction
