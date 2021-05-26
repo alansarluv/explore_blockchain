@@ -2,20 +2,20 @@ const express = require('express');
 const app = express();
 const Blockchain = require('./blockchain');
 
-const bitcoin = new Blockchain();
+const nuCoin = new Blockchain();
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false}));
 
 // API for create new block
 app.get('/blockchain', function (req, res) {
-  res.send(bitcoin);
+  res.send(nuCoin);
 });
 
 // API for create new transaction
 app.post('/transaction', function (req, res) {
-  console.log(req.body);
-  res.send(`The amount of the transaction is ${req.body.amount} bitcoin`);
+  const blockIndex = nuCoin.createNewTransaction(req.body.amount, req.body.sender, req.body.recipient);
+  res.json({ note: `Transaction will be added in block ${blockIndex}.` });
 });
 
 // API for mining
