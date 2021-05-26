@@ -12,26 +12,26 @@ const bitcoin = new Blockchain();
 // bitcoin.createNewBlock(3212, 'JUGALAIHYU898JH', '987HJAA90ANSNMBH0N');
 
 
-// const previousBlockHash = "JHGUYFTRDRT896VGHHGWK7231B";
-// const currentBlockData = [
-//   {
-//     amount: 10,
-//     sender: 'NAQPFYOW8910JKGIJ767VHJJK',
-//     recipient: 'HJAOJIW782610JHBJBBKKVDFGDGL'
-//   },
-//   {
-//     amount: 30,
-//     sender: 'HAPWJNAQPFY212321KLLAJSKAJ67868K',
-//     recipient: 'ZAPWNLKDWNCX782610JHBJBBKKVVAJHJSW'
-//   },
-//   {
-//     amount: 200,
-//     sender: 'CFGACOIJSOW761027HJKAKJ7KJGHJGS',
-//     recipient: 'KJHAGSIOW1811JKHASUSAK987GHFDAGSJHK'
-//   },
-// ];
+const previousBlockHash = "JHGUYFTRDRT896VGHHGWK7231B";
+const currentBlockData = [
+  {
+    amount: 10,
+    sender: 'NAQPFYOW8910JKGIJ767VHJJK',
+    recipient: 'HJAOJIW782610JHBJBBKKVDFGDGL'
+  },
+  {
+    amount: 30,
+    sender: 'HAPWJNAQPFY212321KLLAJSKAJ67868K',
+    recipient: 'ZAPWNLKDWNCX782610JHBJBBKKVVAJHJSW'
+  },
+  {
+    amount: 200,
+    sender: 'CFGACOIJSOW761027HJKAKJ7KJGHJGS',
+    recipient: 'KJHAGSIOW1811JKHASUSAK987GHFDAGSJHK'
+  },
+];
 
-// console.log(bitcoin.proofOfWork(previousBlockHash, currentBlockData));
+console.log(bitcoin.proofOfWork(previousBlockHash, currentBlockData));
 // console.log(bitcoin.hashBlock(previousBlockHash, currentBlockData, '251725'));
 
 // console.log(bitcoin)
