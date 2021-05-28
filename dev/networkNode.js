@@ -19,9 +19,30 @@ app.get('/blockchain', function (req, res) {
 
 // API for create new transaction
 app.post('/transaction', function (req, res) {
-  const blockIndex = nuCoin.createNewTransaction(req.body.amount, req.body.sender, req.body.recipient);
+  const blockIndex = nuCoin.addPendingTransaction(req.body);
   res.json({ note: `Transaction will be added in block ${blockIndex}.` });
 });
+
+// API for create new transaction broadcast
+app.post('/transaction/broadcast', function (req, res) {
+  const newTransaction = nuCoin.createNewTransaction(req.body.amount, req.body.sender, req.body.recipient);
+  nuCoin.addPendingTransaction(newTransaction);
+  const requestPromises = [];
+  nuCoin.networkNodes.forEach(networkNodeURL => {
+    const requestOptions = {
+      uri: networkNodeURL + '/transaction',
+      method: 'POST',
+      body: newTransaction,
+      json: true,
+    };
+    requestPromises.push(rp(requestOptions));
+  });
+  Promise.all(requestPromises)
+    .then(data => {
+      res.json({ note: `Transaction created and broadcast successfully.` });
+    });
+});
+
 
 // API for mining
 app.get('/mine', function (req, res) {

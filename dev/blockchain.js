@@ -1,5 +1,6 @@
 const sha256 = require('sha256');
 const currentNodeUrl = process.argv[3];
+const uuid = require('uuid').v1; // create unique random strings
 
 // constructor
 function Blockchain() {
@@ -37,16 +38,20 @@ Blockchain.prototype.getLastBlock = function() {
 
 // create new trx method
 Blockchain.prototype.createNewTransaction = function(amount, sender, recipient) {
-  const pendingTransaction = {
+  const newTransaction = {
     amount: amount,
     sender: sender,
-    recipient: recipient
+    recipient: recipient,
+    transactionId: uuid().split('-').join('') // remove -- if any
   };
-
-  this.pendingTransaction.push(pendingTransaction);
-  return this.getLastBlock()['index'] + 1; // return the latest mined block
+  return newTransaction;
 };
 
+// add new transaction to pending transaction
+Blockchain.prototype.addPendingTransaction = function(transactionObj) {
+  this.pendingTransaction.push(transactionObj);
+  return this.getLastBlock()['index'] + 1; // return the latest mined block
+};
 
 // create hash method for new block
 Blockchain.prototype.hashBlock =  function(previousBlockHash, currentBlockData, nonce) {
