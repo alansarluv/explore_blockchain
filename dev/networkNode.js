@@ -66,9 +66,9 @@ app.post('/register-and-broadcast-node', function(req, res) {
 
   Promise.all(regNodePromises)
     .then(data => {
-      // if all good, then register all the network node to our new node using register-node-bulk
+      // if all good, then register all the network node to our new node using register-nodes-bulk
       const bulkRegisterOptions = {
-        uri: newNodeUrl + '/register-node-bulk',
+        uri: newNodeUrl + '/register-nodes-bulk',
         method: 'POST',
         body: { allNetworkNodes: [...nuCoin.networkNodes, nuCoin.currentNodeUrl]},
         json: true,
@@ -93,9 +93,16 @@ app.post('/register-node', function(req, res) {
 
 // register multiple nodes at once (without broadcast it again)
 // this API is used to send for new join node after all the node install your node
-app.post('/register-node-bulk', function(req, res) {
-
-})
+app.post('/register-nodes-bulk', function(req, res) {
+  const allNetworkNodes = req.body.allNetworkNodes;
+  allNetworkNodes.forEach(networkNodeURL => {
+    // error handling if newNode is current node and if node already exists in network
+    const nodeNotAlreadyPresent = nuCoin.networkNodes.indexOf(networkNodeURL) == -1;
+    const notCurrentNode = nuCoin.currentNodeUrl !== networkNodeURL;
+    if (nodeNotAlreadyPresent && notCurrentNode) nuCoin.networkNodes.push(networkNodeURL);
+  });
+  res.json({note: 'Bulk registration success.'});
+});
 
 
 app.listen(port, () => {
