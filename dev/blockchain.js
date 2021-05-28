@@ -1,10 +1,15 @@
 const sha256 = require('sha256');
+const currentNodeUrl = process.argv[3];
+
 // constructor
 function Blockchain() {
   this.chain = [];
   this.pendingTransaction = [];
 
-  this.createNewBlock(911, '00', '00'); // you can just put random value here to create you very first block (called genesis block);
+  this.currentNodeUrl = currentNodeUrl;
+  this.networkNodes = [];
+
+  this.createNewBlock(911, '0', '0'); // you can just put random value here to create you very first block (called genesis block);
 }
 
 // =============== ================== =============== method lists =============== ================== ===============

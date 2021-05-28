@@ -3,6 +3,7 @@ const app = express();
 const Blockchain = require('./blockchain');
 const uuid = require('uuid').v1; // create unique random strings
 const port = process.argv[2]; // to fetch element number 3 in package.json npm start ==> 3001 
+const rp = require('request-promise');
 
 const nodeAddress = uuid().split('-').join(''); // remove -- if any
 
@@ -41,6 +42,56 @@ app.get('/mine', function (req, res) {
     block: newBlock
   })
 });
+
+// this API used to register new node and broadcast it to all the node in network
+app.post('/register-and-broadcast-node', function(req, res) {
+  const newNodeUrl = req.body.newNodeUrl;
+  // add this new node to network lists if new node is not exist yet
+  if (nuCoin.networkNodes.indexOf(newNodeUrl) === -1) nuCoin.networkNodes.push(newNodeUrl);
+
+  const regNodePromises = [];
+  // register new node in each of our network node lists
+  nuCoin.networkNodes.forEach(networkNodeURL => {
+    const requestOptions = {
+      uri: networkNodeURL + '/register-node',
+      method: 'POST',
+      body: { newNodeUrl: newNodeUrl},
+      json: true,
+    };
+    // using requestOptions to make request new node to each node in network
+    regNodePromises.push(rp(requestOptions)); // async so we don't know how long it will take
+    // since rp is async and we don't know how much node in our network, so we push all promise in new array 'regNodePromises' 
+    // and set promise.all to watch if all promise is done making request, then we can finally say all the request complete so we can run other operations.
+  });
+
+  Promise.all(regNodePromises)
+    .then(data => {
+      // if all good, then register all the network node to our new node using register-node-bulk
+      const bulkRegisterOptions = {
+        uri: newNodeUrl + '/register-node-bulk',
+        method: 'POST',
+        body: { allNetworkNodes: [...nuCoin.networkNodes, nuCoin.currentNodeUrl]},
+        json: true,
+      };
+      return rp(bulkRegisterOptions);
+    })
+    .then(data => {
+      res.json({note: 'New node registered with network successfully.'});
+    });
+});
+
+// register a node with the network only (without broadcast it again)
+// this API used to register new node only, and not re broadcast again.
+app.post('/register-node', function(req, res) {
+
+});
+
+// register multiple nodes at once (without broadcast it again)
+// this API is used to send for new join node after all the node install your node
+app.post('/register-node-bulk', function(req, res) {
+
+})
+
 
 app.listen(port, () => {
   console.log(`Listening on port ${port}...`);
