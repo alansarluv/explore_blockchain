@@ -38,9 +38,9 @@ app.post('/transaction/broadcast', function (req, res) {
     requestPromises.push(rp(requestOptions));
   });
   Promise.all(requestPromises)
-    .then(data => {
-      res.json({ note: `Transaction created and broadcast successfully.` });
-    });
+  .then(data => {
+    res.json({ note: `Transaction created and broadcast successfully.` });
+  });
 });
 
 
@@ -54,14 +54,59 @@ app.get('/mine', function (req, res) {
   }
   const nonce = nuCoin.proofOfWork(prevBlockHash, currentBlockData);
   const blockHash = nuCoin.hashBlock(prevBlockHash, currentBlockData, nonce);
-
-  nuCoin.createNewTransaction(12.5, "00", nodeAddress); // rewards for minning coin
-
   const newBlock = nuCoin.createNewBlock(nonce, prevBlockHash, blockHash);
-  res.json({
-    note: "New block mined successfully",
-    block: newBlock
+
+  const requestPromises = [];
+  nuCoin.networkNodes.forEach(networkNodeURL => {
+    const requestOptions = {
+      uri: networkNodeURL + '/receive-new-block',
+      method: 'POST',
+      body: {newBlock: newBlock},
+      json: true,
+    };
+    requestPromises.push(rp(requestOptions));
+  });
+  Promise.all(requestPromises)
+  .then(data => {
+    const requestOptions = {
+      uri: nuCoin.currentNodeUrl + '/transaction/broadcast',
+      method: 'POST',
+      body: {
+        amount: 12.5,
+        sender: "00",
+        recipient: nodeAddress,    
+      },
+      json: true,
+    };
+    return rp(requestOptions);
   })
+  .then(data => {
+    res.json({
+      note: 'New block mined and broadcast successfully.',
+      block: newBlock 
+    });
+  })
+});
+
+// this API used to receive and validate newBlock mined
+app.post('/receive-new-block', function(req, res) {
+  const newBlock = req.body.newBlock;
+  const lastBlock = nuCoin.getLastBlock();
+  const correctHash = lastBlock.hash === newBlock.previousBlockHash;
+  const correctIndex = lastBlock['index'] + 1 === newBlock['index'];
+  if (correctHash && correctIndex) {
+    nuCoin.chain.push(newBlock);
+    nuCoin.pendingTransaction = [];
+    res.json({
+      note: 'New block received and accepted.',
+      block: newBlock 
+    });
+  } else {
+    res.json({
+      note: 'New block rejected.',
+      block: newBlock 
+    });
+  }
 });
 
 // this API used to register new node and broadcast it to all the node in network
