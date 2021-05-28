@@ -83,7 +83,12 @@ app.post('/register-and-broadcast-node', function(req, res) {
 // register a node with the network only (without broadcast it again)
 // this API used to register new node only, and not re broadcast again.
 app.post('/register-node', function(req, res) {
-
+  const newNodeUrl = req.body.newNodeUrl;
+  // error handling if newNode is current node and if node already exists in network
+  const nodeNotAlreadyPresent = nuCoin.networkNodes.indexOf(newNodeUrl) == -1;
+  const notCurrentNode = nuCoin.currentNodeUrl !== newNodeUrl;
+  if (nodeNotAlreadyPresent && notCurrentNode) nuCoin.networkNodes.push(newNodeUrl);
+  res.json({note: 'New node registered successfully with node.'});
 });
 
 // register multiple nodes at once (without broadcast it again)
