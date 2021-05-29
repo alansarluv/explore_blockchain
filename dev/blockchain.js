@@ -81,4 +81,26 @@ Blockchain.prototype.proofOfWork = function(previousBlockHash, currentBlockData)
 // it takes a lot of work to generate proof of work, but it very easy to verify that the proof of work is correct
 // so when you want to validate older chain, you only need to use correct nonce along with the previous hash & block data
 
+// validate chain
+Blockchain.prototype.chainIsValid = function(blockchain) {
+  let validaChain = true;
+  for (let i = 1; i < blockchain.length; i++) { // start loop on index 1 because index 0 is genesis block
+    const currentBlock = blockchain[i];
+    const prevBlock = blockchain[i-1];
+    const blockHash = this.hashBlock(prevBlock['hash'], { transactions: currentBlock['transactions'], index: currentBlock['index'] }, currentBlock['nonce']);
+    if (blockHash.substring(0, 4) !== '0000') validaChain = false;
+    if (currentBlock['previousBlockHash'] !== prevBlock['hash']) validaChain = false;
+  };
+
+  // validate genesis block
+  const genesisBlock = blockchain[0];
+  const correctNonce = genesisBlock['nonce'] === 911;
+  const correctPreviousBlockHash = genesisBlock['previousBlockHash'] === '0';
+  const correctHash = genesisBlock['hash'] === '0';
+  const correctTransactions = genesisBlock['transactions'].length === 0;
+  if (!correctNonce || !correctPreviousBlockHash || !correctHash || !correctTransactions) validaChain = false;
+
+  return validaChain;
+};
+
 module.exports = Blockchain;

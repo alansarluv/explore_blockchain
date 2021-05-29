@@ -12,6 +12,7 @@ const nuCoin = new Blockchain();
 app.use(express.json());
 app.use(express.urlencoded({ extended: false}));
 
+// ================== =============== transaction & mine =============== ================== 
 // API for create new block
 app.get('/blockchain', function (req, res) {
   res.send(nuCoin);
@@ -42,7 +43,6 @@ app.post('/transaction/broadcast', function (req, res) {
     res.json({ note: `Transaction created and broadcast successfully.` });
   });
 });
-
 
 // API for mining
 app.get('/mine', function (req, res) {
@@ -88,6 +88,7 @@ app.get('/mine', function (req, res) {
   })
 });
 
+// ================== =============== centralized netwwork lists =============== ================== 
 // this API used to receive and validate newBlock mined
 app.post('/receive-new-block', function(req, res) {
   const newBlock = req.body.newBlock;
@@ -168,6 +169,12 @@ app.post('/register-nodes-bulk', function(req, res) {
     if (nodeNotAlreadyPresent && notCurrentNode) nuCoin.networkNodes.push(networkNodeURL);
   });
   res.json({note: 'Bulk registration success.'});
+});
+
+// this API used to 
+app.post('/consensus', function(req, res) {
+  const newNodeUrl = req.body.newNodeUrl;
+  res.json({note: 'New node registered successfully with node.'});
 });
 
 
