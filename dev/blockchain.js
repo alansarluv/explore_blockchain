@@ -11,7 +11,7 @@ function Blockchain() {
   this.networkNodes = [];
 
   this.createNewBlock(911, '0', '0'); // you can just put random value here to create you very first block (called genesis block);
-}
+};
 
 // =============== ================== =============== method lists =============== ================== ===============
 
@@ -102,5 +102,16 @@ Blockchain.prototype.chainIsValid = function(blockchain) {
 
   return validChain;
 };
+
+// get block with blockHash
+Blockchain.prototype.getBlock = function(blockHash) {
+  let correctBlock = null;
+  this.chain.forEach(block => {
+    if (block['hash'] === blockHash) correctBlock = block;
+  });
+  return correctBlock;
+};
+
+
 
 module.exports = Blockchain;

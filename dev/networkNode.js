@@ -215,6 +215,25 @@ app.get('/consensus', function(req, res) {
 });
 
 
+// ================== =============== Block explore lists =============== ================== 
+app.get('/block/:blockHash', function(req, res) {
+  const blockHash = req.params.blockHash;
+  const correctBlock = nuCoin.getBlock(blockHash);
+  res.json({
+    block: correctBlock
+  })
+});
+
+app.get('/transaction/:transactionId', function(req, res) {
+
+});
+
+app.get('/address/:address', function(req, res) {
+
+});
+
+
+
 app.listen(port, () => {
   console.log(`Listening on port ${port}...`);
 });
