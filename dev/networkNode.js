@@ -171,10 +171,47 @@ app.post('/register-nodes-bulk', function(req, res) {
   res.json({note: 'Bulk registration success.'});
 });
 
-// this API used to 
-app.post('/consensus', function(req, res) {
-  const newNodeUrl = req.body.newNodeUrl;
-  res.json({note: 'New node registered successfully with node.'});
+// this API used to re sync data, check the longest blockchain in all network, validate it and sync
+app.get('/consensus', function(req, res) {
+  requestPromises = [];
+  nuCoin.networkNodes.forEach(networkNodeURL => {
+    const requestOptions = {
+      uri: networkNodeURL + '/blockchain',
+      method: 'GET',
+      json: true
+    };
+    requestPromises.push(rp(requestOptions));
+  });
+  Promise.all(requestPromises)
+  .then(blockchains => {
+    // check if one of the blockchain is having longer chain than others
+    const currentChainLength = nuCoin.chain.length;
+    let maxChainLength = currentChainLength;
+    let newLongestChain = null;
+    let newPendingTransaction = null;
+
+    blockchains.forEach(blockchain => {
+      if (blockchain.chain.length > maxChainLength) {
+        maxChainLength = blockchain.chain.length;
+        newLongestChain = blockchain.chain;
+        newPendingTransaction = blockchain.pendingTransaction;
+      }
+    });
+
+    if (!newLongestChain || (newLongestChain && !nuCoin.chainIsValid(newLongestChain))) {
+      res.json({
+        note: 'Current chain has not been replaced.',
+        chain: nuCoin.chain
+      });
+    } else { // if (newLongestChain && chainIsValid(newLongestChain)) {
+      nuCoin.chain = newLongestChain;
+      nuCoin.pendingTransaction = newPendingTransaction;
+      res.json({
+        note: 'This chain has been replaced.',
+        chain: nuCoin.chain
+      });s      
+    }
+  });
 });
 
 

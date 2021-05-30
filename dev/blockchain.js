@@ -83,13 +83,13 @@ Blockchain.prototype.proofOfWork = function(previousBlockHash, currentBlockData)
 
 // validate chain
 Blockchain.prototype.chainIsValid = function(blockchain) {
-  let validaChain = true;
+  let validChain = true;
   for (let i = 1; i < blockchain.length; i++) { // start loop on index 1 because index 0 is genesis block
     const currentBlock = blockchain[i];
     const prevBlock = blockchain[i-1];
     const blockHash = this.hashBlock(prevBlock['hash'], { transactions: currentBlock['transactions'], index: currentBlock['index'] }, currentBlock['nonce']);
-    if (blockHash.substring(0, 4) !== '0000') validaChain = false;
-    if (currentBlock['previousBlockHash'] !== prevBlock['hash']) validaChain = false;
+    if (blockHash.substring(0, 4) !== '0000') validChain = false;
+    if (currentBlock['previousBlockHash'] !== prevBlock['hash']) validChain = false;
   };
 
   // validate genesis block
@@ -98,9 +98,9 @@ Blockchain.prototype.chainIsValid = function(blockchain) {
   const correctPreviousBlockHash = genesisBlock['previousBlockHash'] === '0';
   const correctHash = genesisBlock['hash'] === '0';
   const correctTransactions = genesisBlock['transactions'].length === 0;
-  if (!correctNonce || !correctPreviousBlockHash || !correctHash || !correctTransactions) validaChain = false;
+  if (!correctNonce || !correctPreviousBlockHash || !correctHash || !correctTransactions) validChain = false;
 
-  return validaChain;
+  return validChain;
 };
 
 module.exports = Blockchain;
