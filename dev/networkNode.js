@@ -235,7 +235,11 @@ app.get('/transaction/:transactionId', function(req, res) {
 });
 
 app.get('/address/:address', function(req, res) {
-
+  const address = req.params.address;
+  const addressData = nuCoin.getAddressData(address);
+  res.json({
+    addressData: addressData
+  });
 });
 
 
