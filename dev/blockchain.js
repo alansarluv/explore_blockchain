@@ -112,6 +112,23 @@ Blockchain.prototype.getBlock = function(blockHash) {
   return correctBlock;
 };
 
+// get transaction with transactionId
+Blockchain.prototype.getTransaction = function(transactionId) {
+  let correctTransaction = null;
+  let correctBlock = null;
+  this.chain.forEach(block => {
+    block.transactions.forEach(transaction => {
+      if (transaction['transactionId'] === transactionId) {
+        correctTransaction = transaction;
+        correctBlock = block;
+      };
+    });
+  });
+  return {
+    transaction: correctTransaction,
+    block: correctBlock
+  };
+};
 
 
 module.exports = Blockchain;

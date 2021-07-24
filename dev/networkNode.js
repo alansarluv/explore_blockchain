@@ -216,6 +216,7 @@ app.get('/consensus', function(req, res) {
 
 
 // ================== =============== Block explore lists =============== ================== 
+// Block explore is an API that allow us to search for specific block, transaction or address
 app.get('/block/:blockHash', function(req, res) {
   const blockHash = req.params.blockHash;
   const correctBlock = nuCoin.getBlock(blockHash);
@@ -225,7 +226,12 @@ app.get('/block/:blockHash', function(req, res) {
 });
 
 app.get('/transaction/:transactionId', function(req, res) {
-
+  const transactionId = req.params.transactionId;
+  const transactionData = nuCoin.getTransaction(transactionId);
+  res.json({
+    transaction: transactionData.transaction,
+    block: transactionData.block
+  })
 });
 
 app.get('/address/:address', function(req, res) {
